@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJ8uR26Va/5JtNCrB86d8cM5/8L6iJgY7B5k31lJq7y85nB2R2h9FfG5l5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans:['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        // --- New Dark Theme Palette ---
+                        'primary': '#38bdf8', // Sky-400 (Vibrant Blue - Main highlight)
+                        'secondary': '#facc15', // Amber-400 (High-contrast Accent)
+                        'background': '#111827', // Deep Dark Blue-Gray (Body Background)
+                        'card-bg': '#1F2937', // Slightly lighter dark (Content Cards/Sidebar)
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Ensuring a smooth vertical layout for mobile and setting the new dark background */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a1f44; /* Deep Dark Background */
+            color: #E5E7EB; /* Light text for readability */
+        }
+       
+        /* Style for the active navigation link - High contrast and vibrant border */
+        .nav-link.active {
+            background-color: #374151; /* Darker background for selection */
+            color: #76c9ed; /* Primary color for text */
+            font-weight: 600; /* Bolder for emphasis */
+            border-left: 4px solid #d2d0c6; /* Secondary accent color border for high visibility */
+        }
+
+        /* Nav link hover state for dark theme */
+        .nav-link:hover:not(.active) {
+             background-color: #2D3748; /* Dark, subtle hover */
+        }
+
+        /* New List Item Style: Lifted effect on hover */
+        .list-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.1), 0 4px 6px -2px rgba(56, 189, 248, 0.05); /* Blue glow */
+        }
+       
+        /* Mobile layout: sidebar becomes a collapsible header */
+        @media (max-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 50;
+                height: auto;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid #374151;
+            }
+            .main-content {
+                padding-top: 150px; /* Space for the fixed header/sidebar */
+            }
+            .brand-mobile-toggle {
+                display: flex !important;
+            }
+            .nav {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-in-out;
+                background-color: #1F2937; /* Ensure nav background is dark when open on mobile */
+            }
+            .nav.open {
+                max-height: 700px; /* Adjust as needed */
+            }
+        }
+
+        /* Lightbox specific styles for zoom/pan */
+        #lightbox-image {
+            transform-origin: 0 0;
+            transition: transform 0.2s ease-out;
+            cursor: grab;
+        }
+        #lightbox-image.zoomed {
+            cursor: move;
+        }
+       
+        /* Thumbnail gallery styles */
+        .thumbnail-container {
+            height: 100%;
+            width: 100%;
+            display: block;
+            position: relative;
+        }
+        .thumbnail-image {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 16/9;
+        }
+       
+        /* Updated Skill Pill Style for dark theme vibrancy */
+        .skill-pill {
+            /* Subtle dark background and vibrant text */
+            @apply bg-gray-700 text-primary px-4 py-1 rounded-full text-sm font-medium shadow-md;
+        }
+
+        /* Scroll Progress Bar styles */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px; /* Thickness */
+            background: linear-gradient(to right, #68caf4, #b69b30); /* Primary to Secondary Gradient */
+            width: 0%;
+            z-index: 99;
+            transition: width 0.1s;
+        }
+
+        /* New Style for Project Button */
+        .project-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem; /* py-3 px-6 */
+            font-weight: 600;
+            border-radius: 0.5rem; /* rounded-lg */
+            background-color: #38bdf8; /* primary */
+            color: #111827; /* deep dark text */
+            transition: background-color 0.2s, transform 0.2s;
+            margin-top: 1.5rem;
+        }
+        .project-button:hover {
+            background-color: #0ea5e9; /* Sky-500 */
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div id="progress-bar"></div>
+
+    <div id="app" class="lg:flex min-h-screen bg-background">
+       
+        <aside id="sidebar" class="sidebar lg:w-72 bg-card-bg shadow-xl lg:shadow-md lg:h-screen p-4 lg:sticky lg:top-0">
+            <div class="brand-container flex items-center justify-between lg:block">
+                <div class="brand">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-white py-4 border-b border-gray-700 mb-4">Karthikeya M</div>
+                    </div>
+                </div>
+
+        <div class="flex justify-center space-x-6 py-4 border-b border-gray-700 mb-4">
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=mkarthikeya235@gmail.com" target="_blank" class="text-gray-400 hover:text-blue-400 transition-colors" title="Email">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              </a>
+              <a href="https://wa.me/919003876833" target="_blank" class="text-gray-400 hover:text-green-500 transition-colors" title="WhatsApp">
+                   <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.438 9.884-9.89 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .004 5.412 0 12.048c0 2.123.554 4.197 1.608 6.037L0 24l6.105-1.602a11.832 11.832 0 005.937 1.613h.005c6.631 0 12.046-5.411 12.05-12.048a11.823 11.823 0 00-3.576-8.505z"/></svg>
+              </a>
+
+              <a href="tel:+91 9003876833" class="text-gray-400 hover:text-green-400 transition-colors" title="Call">
+                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+              </a>
+              <a href="https://maps.app.goo.gl/HRirZC34XM6BVZHA8" class="text-gray-400 hover:text-red-400 transition-colors" title="Location">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>
+              </a>
+            </div>
+                <button id="menu-toggle" class="lg:hidden p-2 rounded-md text-gray-300 bg-gray-700 hover:bg-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+
+            <nav id="nav-links" class="nav mt-6 space-y-1">
+                <a data-target="home" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer active">About me</a>
+                <a data-target="education" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Education</a>
+                <a data-target="skills" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Skills & Area of Intrest</a>
+                <a data-target="internships" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Internships</a>
+                <a data-target="projects" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Projects</a>
+                <a data-target="research" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Research</a>
+                <a data-target="certifications" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Certifications & Online Courses</a>
+                <a data-target="achievements" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Achievements</a>
+                <a data-target="participations" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Knowledge Engagement</a>
+                <a data-target="hobbies" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Hobbies</a>
+                <a href="assets/KARTHIKEYA RESUME 1.PDF" target="_blank" class="block p-3 rounded-lg text-secondary hover:bg-gray-700 transition duration-150 border-t border-gray-700 mt-4 pt-4 font-semibold">Download Resume (PDF)</a>
+            </nav>
+        </aside>
+
+        <main id="main-content" class="main-content flex-1 p-6 lg:p-10">
+            <div id="breadcrumb" class="mb-6 flex items-center space-x-2 text-sm text-gray-400 hidden">
+                <button onclick="goBack()" class="flex items-center text-primary hover:text-secondary font-medium">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back
+                </button>
+                <span id="current-category"></span>
+            </div>
+
+            <div id="content-container">
+                </div>
+        </main>
+    </div>
+
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-black bg-opacity-90 hidden items-center justify-center p-4" onclick="closeLightbox(event)">
+        <div class="relative max-w-7xl max-h-full w-full">
+            <button class="absolute top-4 right-4 text-white hover:text-secondary text-4xl font-light z-20" onclick="closeLightbox(event)">&times;</button>
+           
+            <div id="lightbox-image-container" class="relative overflow-hidden w-full h-full p-4 lg:p-8 flex items-center justify-center">
+                <img id="lightbox-image" src="" alt="Full-size image" class="max-h-[90vh] max-w-[90vw] object-contain">
+            </div>
+
+            <div id="lightbox-caption" class="text-center text-white p-4 absolute bottom-0 left-0 right-0 bg-black bg-opacity-50"></div>
+
+            <div class="absolute bottom-4 left-4 p-2 bg-black bg-opacity-50 text-white text-xs rounded-lg">
+                Scroll to Zoom, Click & Drag to Pan.
+            </div>
+        </div>
+    </div>
+    <script>
+        // --- Data Structure for Portfolio Content (Unchanged content data, only HTML structure/classes updated below) ---
+        const PORTFOLIO_DATA = {
+            home: {
+                title: "                    Welcome to My Profile                  ",
+                type: "detail",
+                content: `
+                    <div class="bg-card-bg p-8 lg:p-12 rounded-2xl shadow-2xl flex flex-col items-center text-center">
+                       
+                        <div class="w-56 h-56 lg:w-72 lg:h-72 rounded-full overflow-hidden border-4 border-primary shadow-2xl mb-8">
+                            <img src="assets/images/profile.JPG" alt="KARTHIKEYA PROFILE" class="w-full h-full object-cover">
+                        </div>
+
+                        <h1 class="text-5xl lg:text-6xl font-extrabold text-white mb-2">Karthikeya M</h1>
+                       
+                        <p class="text-xl lg:text-2xl text-primary font-bold mb-6">
+                            Curious & Passion-Driven Engineer
+                        </p>
+                       
+                        <span class="text-sm font-semibold text-secondary bg-gray-700 py-1 px-3 rounded-full mb-8">
+                             • Embedded Systems • Signal Processing  • Signals & System • Frontend web development
+                        </span>
+
+                        <div class="flex space-x-6 mb-8">
+                            
+                            <a href="https://www.linkedin.com/in/karthikeya-m-41712b274/" target="_blank" class="text-gray-400 hover:text-secondary transition-colors duration-200" title="LinkedIn Profile">
+                                <svg class="w-8 h-8 fill-current" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>LinkedIn</title><path d="M20.447 20.452h-3.554v-5.569c0-1.325-.028-3.044-1.852-3.044-1.853 0-2.136 1.445-2.136 2.951v5.662H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.227 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.456c.98 0 1.773-.773 1.773-1.729V1.729C24 .774 23.207 0 22.227 0z"/></svg>
+                            </a>
+                            <!-- LeetCode icon (inline SVG) -->
+<a href="https://leetcode.com/u/Karthikeya235/" target="_blank"
+   class="text-gray-400 hover:text-primary transition-colors duration-200" aria-label="LeetCode Profile">
+  <svg class="w-8 h-8 fill-current" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <title>LeetCode</title>
+    <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
+  </svg>
+</a>
+                            <a href="https://github.com/mkarthikeya08" target="_blank" class="text-gray-400 hover:text-primary transition-colors duration-200" title="GitHub Profile">
+                                <svg class="w-8 h-8 fill-current" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.492.997.107-.775.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.29-1.552 3.295-1.23 3.295-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                            </a>
+                        </div>
+
+                        <p class="text-lg lg:text-xl text-gray-300 leading-relaxed max-w-3xl mb-8">
+                            I am a Pre-Final Year B.E.(Hons) ECE student deeply Signal processing, Embedded Systems, PCB & Antenna Designing, Front-End web development.
+                            I thrive in collaborative environments and am proactively seeking roles that allow me to apply my skills to build meaningful, impactful projects.
+                            Explore my sections below to see my work!
+                        </p>
+                        <div class="grid md:grid-cols-3 gap-6 w-full max-w-4xl mt-8 pt-8 border-t border-gray-700">
+                            <div class="bg-gray-700 p-4 rounded-lg shadow-inner flex flex-col items-center justify-center">
+                                <h4 class="font-bold text-lg text-primary mb-1">Interest & Skills</h4>
+                                <p class="text-sm text-gray-400 text-center"> Embedded Systems, Signal processing, PCB & Antenna Designing, Python, C++</p>
+                            </div>
+                            <div class="bg-gray-700 p-4 rounded-lg shadow-inner flex flex-col items-center justify-center">
+                                <h4 class="font-bold text-lg text-primary mb-1">Key Internship</h4>
+                                <p class="text-sm text-gray-400 text-center">Cyber Security</p>
+                            </div>
+                            <div class="bg-gray-700 p-4 rounded-lg shadow-inner flex flex-col items-center justify-center">
+                                <h4 class="font-bold text-lg text-primary mb-1">Achievements</h4>
+                                <p class="text-sm text-gray-400 text-center">patent application filed.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            education: {
+                title: "Education & Academic Profile",
+                type: "detail",
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-card-bg p-6 rounded-2xl shadow-xl transition-shadow duration-300 hover:shadow-primary/50 hover:shadow-2xl">
+                            <h3 class="text-2xl font-bold text-white">B.E.(Honours) in Electronics & Communication Engineering</h3>
+                            <p class="text-secondary font-medium">Velammal College of Engineering & Technology (2023–2027)</p>
+                            <p class="mt-2 text-gray-400">Current CGPA: 7.9 (up to 5th semester)</p>
+                        </div>
+                        <div class="bg-card-bg p-6 rounded-2xl shadow-xl transition-shadow duration-300 hover:shadow-primary/50 hover:shadow-2xl">
+                            <h3 class="text-2xl font-bold text-white">12th Grade / Higher Secondary</h3>
+                            <p class="text-secondary font-medium">Pasumalai Higher Secondary school (2023)</p>
+                            <p class="mt-2 text-gray-400">Percentage: 72% </p>
+                        </div>
+                        <div class="bg-card-bg p-6 rounded-2xl shadow-xl transition-shadow duration-300 hover:shadow-primary/50 hover:shadow-2xl">
+                            <h3 class="text-2xl font-bold text-white">Hindi (Praveen uttarardh)</h3>
+                            <p class="text-secondary font-medium">Dakshina Bharat Hindi Prachar Sabha (2022)</p>
+                            <p class="mt-2 text-gray-400">Percentage: 62.5% First Class </p>
+                        </div>
+                    </div>
+                `
+            },
+            skills: {
+                title: " ",
+                type: "detail",
+                content: `
+                    <div class="bg-card-bg text-white p-8 lg:p-12 rounded-2xl shadow-xl transition-shadow duration-300 hover:shadow-primary/50 hover:shadow-2xl">
+                        <h3 class="text-4xl font-extrabold text-white mb-10 text-center">Area of Interest</h3>
+                       
+                        <div class="flex flex-wrap justify-center gap-8 md:gap-12 mb-12 border-b border-gray-700 pb-10">
+                            <div class="text-center flex flex-col items-center">
+                                <i class="fa-brands fa-python text-6xl text-secondary mb-2"></i>
+                                <p class="text-lg font-semibold text-gray-200">• Massive MIMO</p>
+                            </div>
+                            <div class="text-center flex flex-col items-center">
+                                <i class="fa-solid fa-c text-6xl text-primary mb-2"></i>
+                                <p class="text-lg font-semibold text-gray-200">• Embedded System & Automation</p>
+                            </div>
+                            <div class="text-center flex flex-col items-center">
+                                <i class="fa-brands fa-js text-6xl text-amber-300 mb-2"></i>
+                                <p class="text-lg font-semibold text-gray-200"> </p>
+                            </div>
+                           
+                        </div>
+
+                        <div class="space-y-6">
+                            <h4 class="text-2xl font-bold text-primary border-b border-gray-700 pb-2 mb-4">Skills, Tools & Platforms</h4>
+                            <div class="flex flex-wrap gap-4 text-gray-300">
+                                <span class="tool-pill"><i class="fa-solid fa-microchip mr-2"></i>• CODESYS & Cisco</span>
+                                <span class="tool-pill"><i class="fa-solid fa-microchip mr-2"></i>• HFSS/PSpice</span>
+                                <span class="tool-pill"><i class="fa-solid fa-chart-line mr-2"></i>• MATLAB</span>
+                                <span class="tool-pill"><i class="fa-solid fa-microchip mr-2"></i>• ESP32/Arduino</span>
+                                <span class="tool-pill"><i class="fa-brands fa-github mr-2"></i>• Git & GitHub</span>
+                                 <span class="tool-pill"><i class="fa-brands fa-github mr-2"></i>• LeetCode</span>
+                                <span class="tool-pill"><i class="fa-solid fa-laptop-code mr-2"></i>• VS Code</span>
+                                 <span class="tool-pill"><i class="fa-solid fa-laptop-code mr-2"></i>• Python / c++ / HTML</span>
+                            </div>
+                        </div>
+                    </div>
+                    <style>
+                        /* Ensuring the tool pills blend with the dark background */
+                        .tool-pill {
+                            @apply bg-gray-700 text-gray-200 px-4 py-1 rounded-full text-sm font-medium shadow-md;
+                        }
+                    </style>
+                 `
+            },
+            
+                    // --- Multi-Level Section: INTERNSHIPS ---
+            internships: {
+                title: "Internships & Inplant Training",
+                type: "list",
+                items: [
+                    { 
+                        id: "CSUITE", 
+                        name: "Csuite Tech Labs (June-2025)", 
+                        summary: "Studied Cybersecurity Foundation & Protocols, Network Topologies, Network and Web Security, Cyber Awareness.",
+                        content: {
+                            title: "CSUITE TECH LABS Internship",
+                            details: "I completed a two-week internship focusing on Cybersecurity Foundation & Protocols, Network Topologies, Network and Web Security, Cyber Awareness and more! .",
+                            images: [
+                                { src: "assets/images/offer.JPG", caption: "Offer letter from CSUITE TECH LABS." },
+                                { src: "assets/images/int.JPG", caption: "Certificate from CSUITE Internship." },
+                            ]
+                        }
+                    },
+                     { 
+                        id: "De Drone World Solution Private Limited", 
+                        name: "De Drone World Solution Private Limited (August-2024) ", 
+                        summary: "Drone Assembly & Protocols ",
+                        content: {
+                            title: "De Drone World Solution Private Limited",
+                            details: "• Learn about DGCA rules and regulations •Assembly of drone and learn how drones are functioned .",
+                            images: [
+                                { src: "assets/images/de.JPG", caption: "Training Program Participation Certificate." },
+                            ]
+                        }
+                    },
+                ] 
+            },     
+            
+            // --- MODIFIED Multi-Level Section: PROJECTS ---
+           projects: {
+                title: "Key Projects",
+                type: "list",
+                items: [
+                    
+                    // New Project 2: Self-Portfolio
+                    {
+                        id: "self_portfolio",
+                        name: "Portfolio",
+                        summary: "The very portfolio you are viewing, built from scratch using modern web technologies.",
+                        content: {
+                            title: "Portfolio",
+                            details: `
+                                <p class="text-gray-300 mb-4">This entire interactive portfolio is a project in itself. It was designed to be a highly functional, single-page application (SPA) style portfolio, demonstrating my front-end development, UI/UX design, and JavaScript proficiency.</p>
+                               
+                                <h4 class="text-xl font-bold text-primary mt-6 mb-2">Core Features:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-2 ml-4">
+                                    <li>Technology:Pure HTML5, Tailwind CSS (for utility-first styling), and JavaScript (for interactivity and dynamic content loading).</li>
+                                    <li>Dynamic Navigation:Implements a JavaScript-based routing and history stack for smooth, SPA-like navigation between sections without full page reloads.</li>
+                                    <li>Responsive Design:Optimized for seamless viewing on desktop, tablet, and mobile devices.</li>
+                                    <li>Vibrant Dark Theme: Utilizes a custom dark theme palette for a modern, professional look.</li>
+                                </ul>
+                                <p class="mt-4 text-gray-300 font-medium">This project showcases my ability to implement custom interactive features and manage complex DOM manipulation.</p>
+                               
+                                <a href="https://suvedha1701.github.io/my-portfolio/" target="_blank" class="project-button">
+                                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.492.997.107-.775.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.29-1.552 3.295-1.23 3.295-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                                    View Source Code (GitHub)
+                                </a>
+                            `,
+                            images: []
+                        }
+                    },
+                    // Existing Project 1
+                    {
+                        id: "wrist Band and Air Bag",
+                        name: "Intelligent Integrated Wearable Safety System for Elderly Fall Prevention and Child Abuse Monitoring (October-2025) at KRCE",
+                        summary: "Automated early prevention for elderly person and Childrens.",
+                        content: {
+                            title: "INTELLIGENT INTEGRATED WEARABLE SAFETY SYSTEM FOR ELDERLY FALL PREVENTION AND CHILD ABUSE MONITORING",
+                            details: `
+                                <p class="text-gray-300 mb-4">This project focuses on designing a smart wearable safety system to protect elderly individuals and children. The system continuously monitors body movements and environmental conditions using sensors to detect falls and abnormal activities. In emergency situations, it automatically sends alerts to caregivers or guardians, enabling quick response and improved safety.</p>
+                               
+                                <h4 class="text-xl font-bold text-primary mt-6 mb-2">How It Works:</h4>
+                                <ul class="list-disc list-inside text-gray-300 space-y-2 ml-4">
+                                    <li>Sensor Data Collection: An accelerometer and gyroscope monitor body movements and orientation to detect sudden falls or abnormal motion.Additional sensors (such as temperature or heart-rate sensors) can track health conditions.Regulation:The system compares the current temperature reading against a pre-set threshold value. The fan speed is increased when the temperature is above the threshold and decreased when below, ensuring efficient cooling.</li>
+                                    <li>Fall Detection & Activity Analysis: The microcontroller analyzes motion data in real time. A sudden impact followed by inactivity is identified as a fall.Unusual movement patterns or force triggers potential abuse detection.</li>
+                                </ul>
+                                <p class="mt-4 text-gray-300 font-medium">This project demonstrates core skills in sensor interfacing, microcontroller programming, and automated control logic.</p>
+                                <a href="assets/images/wrist4.mp4" target="_blank" class="text-sm text-secondary hover:text-primary mt-2 block font-semibold"> Click here to view the Demo Video &rarr;</a>
+                            `,
+                            images: [
+                                { src: "assets/images/wrist1.JPG", caption: " "},
+                                { src: "assets/images/wrist3.JPG", caption: " "},
+                                { src: "assets/images/wrist2.JPG", caption: " "},
+                            ]
+                             }
+                    },
+                    // Existing Project 2
+                    {
+                        id: "smart_Irrigation_system",
+                        name: "Two Way Smart Irrigation System by Using Iot (August-2025) at VCET ",
+                        summary: "IoT-based system providing real-time Agriculture.",
+                        content: {
+                            title: "Two way smart irrigation system",
+                            details: `
+                                <p class="text-gray-300 mb-4">This project presents an intelligent IoT-based irrigation system designed to both supply water to crops during dry conditions and remove excess water during flooding or over-irrigation. Soil moisture sensors continuously monitor the water content of agricultural land. When moisture levels fall below a predefined threshold, the system automatically activates a water pump to irrigate the field. Conversely, when excess water is detected, a suction pump is triggered to drain surplus water, preventing crop damage and root decay. The system enables real-time monitoring and remote control through an IoT platform, improving water efficiency and crop health.</p>
+                            `,
+                        }
+                    },
+
+                    //
+                    {
+                        id: "Automatic fire detection",
+                        name: "Automatic Fire Detection (April-2024) at VCET ",
+                        summary: "IoT-based system providing real-time parking slot availability and cloud-connected gas leakage alerts.",
+                        content: {
+                            title: "Automatic fire detection with IoT Alerts",
+                            details: `
+                                <p class="text-gray-300 mb-4">This project focuses on developing an intelligent fire safety system capable of detecting fire at an early stage and taking immediate action without human intervention. A fire sensor continuously monitors the environment for flame or abnormal temperature rise. When fire is detected, the microcontroller processes the sensor data and instantly triggers a water pump motor to spray water and control the fire.
+
+At the same time, a GSM (SIM) module sends an alert message to a predefined emergency contact, such as a nearby fire station or building authority, informing them about the fire incident. The system ensures fast response, reduces dependency on manual fire extinguishing, and enhances safety in residential, industrial, and commercial environments..</p>
+                               
+                                <p class="mt-4 text-gray-300 font-medium">This showcases an end-to-end solution combining embedded control, IoT connectivity, and safety monitoring.</p>
+                                <a href="assets/images/fire1.mp4" target="_blank" class="text-sm text-secondary hover:text-primary mt-2 block font-semibold">Click here to view the Demo Video &rarr;</a>
+                            `,
+                            images: [
+                                { src: "assets/images/fire2.JPG", caption: "FIRE DETECTED BY SENSOR " },
+                                { src: "assets/images/fire3.JPG", caption: "        " },
+                            ]
+                        }
+                    },
+
+                    
+                ]
+            },
+           research: {
+                title: "Research & Intellectual Property",
+                type: "detail",
+                content: `
+                <div class="space-y-6">
+                        <div class="bg-card-bg p-6 rounded-2xl shadow-xl transition-shadow duration-300 hover:shadow-primary/50 hover:shadow-2xl">
+                            <h3 class="text-xl font-semibold text-secondary">Presented Research Paper (2024)</h3>
+                            <p class="text-gray-300 mb-2 font-medium">Title: AN OVERVIEW: CLEAN AIR, HEALTHY CARE AI-DRIVEN OXYGEN PURIFICATION IN HOSPITALS</p>
+                            <p class="text-gray-400 italic">Conference: VAANI International Conference on MEDICAL DEVICES, DIAGNOSTICS, IMAGING & DIGITAL TECHNOLOGIES(ICMDID-2024)</p>
+                            <p class="mt-3 text-gray-300">The paper focuses on the The paper mainly focuses on improving hygiene and infection control in government hospitals by integrating Artificial Intelligence (AI) with oxygen-based air purification systems. It emphasizes continuous monitoring of indoor air quality by detecting bacteria, viruses, and particulate matter in real time. The proposed system uses AI-driven analytics to automatically optimize purification levels and ensure a safe hospital environment. Overall, the study aims to enhance patient safety, support healthcare workers, and improve health outcomes through intelligent air quality management</p>
+                            <div class="mt-4 border-t border-gray-700 pt-4">
+                                <h4 class="text-xl font-semibold text-primary">Certification of presentation</h4>
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div class="rounded-lg overflow-hidden shadow-md bg-gray-700 cursor-pointer hover:opacity-80 transition thumbnail-container aspect-video" 
+                                         data-src="assets/images/vaani.JPG" data-caption="Certificate of Presentation">
+                                        <p class="p-2 text-center text-xs text-gray-400">Certificate of Presentation</p>
+                                         <img src="assets/images/vaani.JPG" alt="Certificate of Presentation" class="thumbnail-image object-contain">
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                    <div class="space-y-6">
+                        <div class="bg-card-bg p-6 rounded-2xl shadow-xl transition-shadow duration-300 hover:shadow-primary/50 hover:shadow-2xl">
+                            <h3 class="text-2xl font-bold text-secondary">Patent Application Filed (2024)</h3>
+                            <p class="text-gray-300 mb-2 font-medium">Patent Title: A System for Powering and Leveraging Energy Harvesting Techniques for Sustainable Wireless Sensor Networks in low power WAN deployments through Edge**</p>
+                            <p class="text-gray-400 italic">Admission No.: 202441062415 | Status: Filed on 30th August, 2024</p>
+                            <p class="mt-3 text-gray-300">This intellectual property outlines a system designed to improve the sustainability of Wireless Sensor Networks (WSN). It integrates energy harvesting techniques and leverages Edge Computing to provide efficient, reliable power for WSNs deployed in Low Power Wide Area Network (LPWAN) environments.</p>
+                           <img src="assets/images/pat1.JPG" alt="Certificate of Presentation" class="thumbnail-image object-contain">
+                            
+                        </div>
+                    </div>
+                `,
+                
+            },
+            // --- MODIFIED Multi-Level Section: CERTIFICATIONS ---
+            certifications: {
+                title: "Certifications & Online Courses",
+                type: "list",
+                items: [
+                    {
+                        id: "nptel",
+                        name: "NPTEL Courses",
+                        summary: "Elite certifications in various domains.",
+                        content: {
+                            title: "NPTEL Courses",
+                            type: "sub_list", // Custom type for nested list view
+                            items: [
+                                {
+                                    id: "nptel_ml",
+                                    name: "Electronic Systems for Cancer diagnosis",
+                                    content: {
+                                        title: "NPTEL: Electronic Systems for Cancer diagnosis",
+                                        images: [ { src: "assets/images/cancer.JPG", caption: "NPTEL Certificate Image" } ]
+                                    }
+                                },
+                                {
+                                    id: "nptel_sensor",
+                                    name: "Sensor and Actuators",
+                                    content: {
+                                        title: "NPTEL: Sensor technologies:physics, fabrication and circuits",
+                                        images: [ { src: "assets/images/sensors.JPG", caption: "NPTEL Certificate Image" } ]
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        id: "cyber",
+                        name: "Cybersecurity",
+                        summary: "Basics of cybersecurity.",
+                        content: {
+                            title: "Cybersecurity for beginners",
+                            type: "sub_list", // Custom type for nested list view
+                            items: [
+                                {
+                                    id: "coursera_cv",
+                                    name: "Cybersecurity for beginners",
+                                    content: {
+                                        title: "Cybersecurity for beginners ",
+                                        images: [ { src: "assets/images/strive.JPEG", caption: "Certificate Image" } ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        id: "industry 5.0",
+                        name: "Industry 5.0",
+                        summary: "Basics of industry 5.0",
+                        content: {
+                            title: "Industry 5.0",
+                            type: "sub_list", // Custom type for nested list view
+                            items: [
+                                {
+                                    id: "industry 5.0",
+                                    name: "INDUSTRY 5.0",
+                                    content: {
+                                        title: "completed the INDUSTRY 5.0 value added course conducted by (VIT-Vellore)-2023 ",
+                                        images: [ { src: "assets/images/vit1.JPEG", caption: "Certificate Image" } ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+           
+            // --- NEW LIST SECTION: ACHIEVEMENTS ---
+            achievements: {
+                title: "Achievements & Awards",
+                type: "list",
+                items: [
+                    {
+                        id: "second_place",
+                        name: " 50M Rifle shooting (2025)",
+                        summary: "Won the II place for the 50M Rifle shooting",
+                        content: {
+                            title: "Won the Silver Medal in 50-meter Rifle Shooting during an NCC (National Cadet Corps) Camp-(2025)",
+                            details: "Demonstrated exceptional marksmanship, focus, and discipline by securing the 2nd position in the 50m rifle shooting competition at the NCC camp. The event tested precision shooting skills, breath control, stability, and adherence to strict safety protocols. This achievement reflects strong hand–eye coordination, mental resilience, and competitive spirit under pressure.",
+                            images: [
+                                { src: "assets/images/ncc1.JPEG", caption: "Photo from the award ceremony" },
+                                { src: "assets/images/ncc2.JPEG", caption: "II Place Competition Certificate" },
+                                { src: "assets/images/ncc3.JPEG", caption: "Photo from the award ceremony" },
+                            ]
+                        }
+                    },
+                 
+                    {
+                        id: "quiz",
+                        name: "Mathematics contest (2024)",
+                        summary: "Secured 3rd place in Mathematics contest held in my college",
+                        content: {
+                            title: "Mathematics competition",
+                            details: "Secured the 3rd place in the Mathematics quiz competition.",
+                            images: [ { src: "assets/images/fun.JPEG", caption: "3rd place Certificate" },
+                            ]
+                        }
+                    },
+                ]
+            },
+            // --- NEW LIST SECTION: PARTICIPATIONS ---
+           participations: {
+                        title: "Enthusiastic Participation",
+                        type: "list",
+                        items: [
+                            {
+                                id: "RIT",
+                                name: "Empowering IoT",
+                                summary: "Hands-on Workshop Experience Empowering IoT",
+                                content: {
+                                    title: "Empowering IoT",
+                                    details: "Participated in a two-day technical workshop on “Empowering IoT” organized by the Department of Electronics and Communication Engineering, Velammal College of Engineering and Technology, Madurai, held on 22–23 August 2024. Gained hands-on exposure to Internet of Things (IoT) concepts including IoT architecture, sensors and actuators, embedded systems, microcontrollers, and real-world IoT applications. Enhanced practical understanding of connected systems, smart devices, and data-driven automation, aligning with industry-relevant IoT workflows.",
+                                    images: [
+                                        { src: "assets/images/empiot.JPG", caption: "Participation Certificate" },
+                                    ]
+                                }
+                            },
+                    {
+                         id: "Pre-Conference Workshop",
+                        name: "Cybersecurity Application & NIR Spectrometer",
+                        summary: "Pre-Conference Workshop",
+                        content: {
+                            title: "CYBERSECURITY APPLICATIONS & NIR SPECTROMETERS",
+                            details: "Participated in the Pre-Conference Workshop of the DST-SERB sponsored Velammal International Conference on Engineering 2024 (VInCE’24), organized by the Department of Electronics and Communication Engineering at Velammal College of Engineering and Technology, Madurai, on 16 May 2024, titled “Cybersecurity Applications & NIR Spectrometers in Engineering Applications”, gaining hands-on exposure to network security concepts, cryptography basics, intrusion detection systems (IDS), secure data communication, sensor interfacing, signal acquisition, spectral analysis, and Near-Infrared (NIR) spectroscopy tools used in modern engineering and analytical applications. ",
+                            images: [
+                                 { src: "assets/images/pre.JPG", caption: "Participation Certificate" },
+                             ]
+                        }
+                    },
+                     
+                     {
+                         id: "Generative AI workshop",
+                        name: "Kurukshetra-24 Generative AI workshop",
+                        summary: "2 Day skill development workshop ",
+                        content: {
+                            title: "GENERATIVE AI",
+                            details: "Successfully completed a two-day Generative AI workshop held on 1st and 2nd March 2024 during Kurukshetra 24, at the College of Engineering Guindy (CEG), Anna University, Chennai, gaining practical exposure to Generative AI fundamentals, large language models (LLMs), prompt engineering, neural networks, AI model workflows, and real-world AI applications. ",
+                            images: [
+                                 { src: "assets/images/kur2.JPEG", caption: "Participation Certificate" },
+                                  { src: "assets/images/kur.JPG", caption: "Participation Certificate" },
+                             ]
+                        }
+                    },
+                     {
+                         id: "Other participation",
+                        name: "Confederation of Indian Industry ",
+                        summary: " CII Connect ",
+                        content: {
+                            title: "CII Connect",
+                            details: "I had the incredible opportunity to attend the CII (Confederation of Indian Industry) 8th Edition CONNECT Madurai 2025 INVESTECH SOUTH on 28th November. ",
+                            images: [
+                                 { src: "assets/images/cii1.JPEG", caption:"The event was inaugurated by Thiru. Palanivel Thiagarajan, Hon’ble Minister for Information Technology and Digital Services, Government of Tamil Nadu."},
+                                  { src: "assets/images/cii2.JPEG", caption: " Mr. Thirumurugan Subbaraj Sir, Director HCL Technologies – Madurai &  Mr. Sankar Ganesh Sir , Vice President of Elysium Group of Companies, Madurai."},
+                             ]
+                        }
+                    },
+                     {
+                         id: "Paper presentation & short film",
+                        name: "FUSION FESTA",
+                        summary: "Paper presentation & short film",
+                        content: {
+                            title: "PAPER PRESENTATION - IoT Emerging in Industrial Automation, SHORT FILM - College life",
+                            details: "  ",
+                            images: [
+                                 { src: "assets/images/sit.JPEG", caption: "Participation Certificate" },
+                             ]
+                        }
+                    },
+                ]
+            },
+            // --- NEW LIST SECTION: HOBBIES ---
+            hobbies: {
+                title: "Hobbies & Interests",
+                type: "list",
+                items: [
+                    {
+                        id: "Travelling",
+                        name: "Travelling",
+                        summary: "Explore the places",
+                        content: {
+                            title: "TRAVELLING",
+                            details: "Enthusiastic traveler with a strong interest in exploring new places and cultures while creating lasting memories.",
+                        }
+                    },
+                    {
+                        id: "Driving",
+                        name: "Driving",
+                        summary: "  ",
+                        content: {
+                            title: "DRIVING",
+                            details: "Confident driver with hands-on experience in operating manual gear vehicles under various road conditions..",
+                        }
+                    },
+                     {
+                        id: "SHOOTING",
+                        name: "Shooting/Firing",
+                        summary: "WELL KNOWN-HAT",
+                        content: {
+                            title: "SHOOTING/FIRING",
+                            details: "Experienced in shooting practices with confident handling, proper holding, precise aiming, and controlled triggering, demonstrating strong focus and mental concentration while following safety protocols.",
+                            
+                        }
+
+                    },
+
+                    {
+                        id: "Listening Songs",
+                        name: "Listening songs",
+                        summary: "Love to hearing the songs",
+                        content: {
+                            title: "Listening songs",
+                            details: "Enjoy listening to all types of music, especially songs composed by Ilaiyaraaja, A.R. Rahman, and Harris Jayaraj.",
+                            
+                        }
+
+                    },
+                   
+                ]
+            },
+        };
+
+        // --- Core Application State & Functions ---
+        const contentContainer = document.getElementById('content-container');
+        const breadcrumb = document.getElementById('breadcrumb');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const menuToggle = document.getElementById('menu-toggle');
+        const navBar = document.getElementById('nav-links');
+        const progressBar = document.getElementById('progress-bar'); // New element
+
+        // Lightbox elements
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const lightboxImageContainer = document.getElementById('lightbox-image-container');
+
+        // History Stack stores objects: { pageId: 'certifications', itemId: 'nptel', subItemId: 'nptel_ml' }
+        let historyStack = [{ pageId: 'home', itemId: null, subItemId: null }]; // Tracks navigation history for the 'Back' button
+
+        // Pan/Zoom State
+        let currentScale = 1;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let translateX = 0;
+        let translateY = 0;
+       
+        // --- NEW FEATURE: Scroll Progress Bar Logic ---
+        function updateProgressBar() {
+            const scroll = document.documentElement.scrollTop || document.body.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (scroll / height) * 100;
+            progressBar.style.width = scrolled + "%";
+        }
+        window.addEventListener('scroll', updateProgressBar);
+        // ---------------------------------------------
+
+
+        // 1. Mobile Menu Toggle
+        menuToggle.addEventListener('click', () => {
+            navBar.classList.toggle('open');
+        });
+
+        // 2. Navigation Logic (Handles Clicks on Sidebar Links)
+        navLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                const targetId = event.currentTarget.dataset.target;
+               
+                // If clicking the current Level 1 item, do nothing
+                if (historyStack.length === 1 && historyStack[0].pageId === targetId) {
+                    return;
+                }
+               
+                // Reset history to the new Level 1 page
+                historyStack = [{ pageId: targetId, itemId: null, subItemId: null }];
+                renderContent(targetId);
+               
+                // Close mobile menu after selection
+                navBar.classList.remove('open');
+            });
+        });
+
+        // 3. Dynamic Rendering of Content
+        function renderContent(pageId, itemId = null, subItemId = null) {
+            const data = PORTFOLIO_DATA[pageId];
+
+            if (!data) {
+                contentContainer.innerHTML = '<div class="text-center text-gray-500 py-10">Content not found.</div>';
+                updateBreadcrumb();
+                return;
+            }
+
+            // Update active link in the sidebar
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.target === pageId) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Set main title color to white/light text
+            let html = `<h2 class="text-4xl lg:text-5xl font-extrabold text-white mb-8">${data.title}</h2>`;
+
+            // LEVEL 4: Sub-Detail View (e.g., viewing a specific NPTEL certificate image)
+            if (subItemId && itemId && data.type === 'list') {
+                const category = data.items.find(i => i.id === itemId);
+                const item = category?.content?.items?.find(i => i.id === subItemId);
+               
+                if (item && item.content) {
+                    // Custom rendering for certificate images only (as requested by user)
+                    html = `
+                        <h2 class="text-4xl font-extrabold text-white mb-8">${item.content.title}</h2>
+                        <div class="bg-card-bg p-8 rounded-2xl shadow-xl space-y-6">
+                            ${item.content.images && item.content.images.length > 0 ?
+                                `<div class="mt-4">
+                                    <h4 class="text-xl font-semibold text-primary mb-4">Certificate Proof (Click to Zoom)</h4>
+                                    <div class="grid grid-cols-1 gap-4">
+                                        ${item.content.images.map(img => `
+                                            <div class="rounded-lg overflow-hidden shadow-md bg-gray-700 cursor-pointer hover:opacity-80 transition thumbnail-container aspect-video"
+                                                 data-src="${img.src}" data-caption="${img.caption}" onclick="openLightbox(this)">
+                                                <img src="${img.src}" alt="${img.caption}" class="thumbnail-image object-contain">
+                                                <p class="p-2 text-center text-xs text-gray-400">${img.caption}</p>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>`
+                                : '<p class="text-gray-400">No image available.</p>'}
+                        </div>
+                    `;
+                }
+            }
+            // LEVEL 3: Detail View (e.g., viewing Internship details) OR a Sub-List (e.g., NPTEL list)
+            else if (itemId && data.type === 'list') {
+                const item = data.items.find(i => i.id === itemId);
+
+                // Handle the sub-list structure (for Certifications)
+                if (item?.content?.type === 'sub_list') {
+                    // This is the Level 2 list for NPTEL/Coursera
+                    html = `<h2 class="text-4xl font-extrabold text-white mb-8">${item.content.title}</h2>`;
+                    html += `
+                        <div class="space-y-4">
+                            ${item.content.items.map(subItem => `
+                                <div data-page-id="${pageId}" data-item-id="${itemId}" data-sub-id="${subItem.id}" class="sub-list-item list-item bg-card-bg p-6 rounded-2xl shadow-md hover:shadow-xl transition duration-300 cursor-pointer border-l-4 border-gray-700 hover:border-secondary">
+                                    <h3 class="text-xl font-bold text-white">${subItem.name}</h3>
+                                    <span class="text-sm text-primary font-medium mt-2 inline-block">View Certificate &rarr;</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                // Handle standard Level 3 detail view (for Internships, Projects, Achievements, Participations, Hobbies)
+                else if (item && item.content) {
+                   html = `
+                        <h2 class="text-4xl font-extrabold text-white mb-8">${item.content.title}</h2>
+                        <div class="bg-card-bg p-8 rounded-2xl shadow-xl space-y-6">
+                            <p class="text-gray-300 leading-relaxed">${item.content.details}</p>
+                            ${item.content.images && item.content.images.length > 0 ?
+                                `<div class="mt-8 border-t border-gray-700 pt-6">
+                                    <h4 class="text-xl font-semibold text-primary mb-3">Supporting Visuals</h4>
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        ${item.content.images.map(img => `
+                                            <div class="rounded-lg overflow-hidden shadow-md bg-gray-700 cursor-pointer hover:opacity-80 transition thumbnail-container"
+                                                 data-src="${img.src}" data-caption="${img.caption}" onclick="openLightbox(this)">
+                                                <img src="${img.src}" alt="${img.caption}" class="thumbnail-image">
+                                                <p class="p-2 text-center text-xs text-gray-400 truncate">${img.caption}</p>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>`
+                                : ''}
+                        </div>
+                    `;
+                }
+            }
+            // LEVEL 2: List View (e.g., seeing list of Internships, Achievements, Hobbies)
+            else if (data.type === 'list') {
+                html += `
+                    <div class="space-y-4">
+                        ${data.items.map(item => `
+                            <div data-id="${item.id}" class="list-item bg-card-bg p-6 rounded-2xl shadow-md transition duration-300 cursor-pointer border-l-4 border-gray-700 hover:border-primary">
+                                <h3 class="text-xl font-bold text-white">${item.name}</h3>
+                                <p class="text-gray-400 mt-1">${item.summary}</p>
+                                <span class="text-sm text-secondary font-medium mt-2 inline-block">View Details &rarr;</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            // LEVEL 1: Simple Detail View (e.g., Home, Skills, Education)
+            else if (data.type === 'detail') {
+                html += data.content;
+            }
+
+            contentContainer.innerHTML = html;
+            updateBreadcrumb(pageId, itemId, subItemId);
+
+            // Add click listeners for Level 2 items (Top-level lists like Internships/Achievements)
+            if (data.type === 'list' && !itemId && !subItemId) {
+                document.querySelectorAll('.list-item').forEach(item => {
+                    item.addEventListener('click', (event) => {
+                        const newItemId = event.currentTarget.dataset.id;
+                        historyStack.push({ pageId, itemId: newItemId, subItemId: null });
+                        renderContent(pageId, newItemId);
+                    });
+                });
+            }
+           
+            // Add click listeners for Level 3 items (Sub-lists like NPTEL/Coursera)
+            if (itemId && data.type === 'list') {
+                const item = data.items.find(i => i.id === itemId);
+                if (item?.content?.type === 'sub_list') {
+                     document.querySelectorAll('.sub-list-item').forEach(subItem => {
+                        subItem.addEventListener('click', (event) => {
+                            const newSubId = event.currentTarget.dataset.subId;
+                            historyStack.push({ pageId, itemId, subItemId: newSubId });
+                            renderContent(pageId, itemId, newSubId);
+                        });
+                    });
+                }
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateProgressBar(); // Ensure progress bar updates on content load
+        }
+
+        // 4. Back Button / History Management
+        function goBack() {
+            if (historyStack.length > 1) {
+                historyStack.pop(); // Remove current state
+                const prevState = historyStack[historyStack.length - 1];
+               
+                // Render based on the previous state object
+                renderContent(prevState.pageId, prevState.itemId, prevState.subItemId);
+            } else {
+                // If only the base state is left, ensure we are on home
+                renderContent('home');
+            }
+        }
+
+        // 5. Breadcrumb Update (UI for Back/Hierarchy)
+        function updateBreadcrumb(pageId, itemId = null, subItemId = null) {
+            const currentSection = document.getElementById('current-category');
+           
+            // Show breadcrumb if we are deeper than Level 1
+            if (historyStack.length > 1 || itemId) {
+                breadcrumb.classList.remove('hidden');
+            } else {
+                breadcrumb.classList.add('hidden');
+            }
+
+            let pathText = '';
+            if (historyStack.length > 1) {
+                const currentState = historyStack[historyStack.length - 1];
+                const level1Id = currentState.pageId;
+                const level1Title = PORTFOLIO_DATA[level1Id]?.title || 'Menu';
+               
+                pathText = level1Title;
+               
+                // If on Level 3 or 4, add the item name
+                if (currentState.itemId) {
+                    const item = PORTFOLIO_DATA[level1Id].items.find(i => i.id === currentState.itemId);
+                    if (item) {
+                        pathText += ` / ${item.name}`;
+                    }
+                }
+               
+                // If on Level 4, add the sub-item name
+                if (currentState.subItemId) {
+                    const category = PORTFOLIO_DATA[level1Id].items.find(i => i.id === currentState.itemId);
+                    const subItem = category?.content?.items?.find(i => i.id === currentState.subItemId);
+                    if (subItem) {
+                        pathText += ` / ${subItem.name}`;
+                    }
+                }
+                currentSection.innerHTML = pathText;
+            } else {
+                currentSection.innerHTML = '';
+            }
+        }
+
+        // --- Lightbox / Image Gallery Functions (Unchanged Logic) ---
+
+        function updateImageTransform() {
+            lightboxImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+            if (currentScale > 1) {
+                lightboxImage.classList.add('zoomed');
+            } else {
+                lightboxImage.classList.remove('zoomed');
+                // Center image if zoom resets
+                translateX = 0;
+                translateY = 0;
+            }
+        }
+
+        function openLightbox(thumbnailElement) {
+            const src = thumbnailElement.dataset.src;
+            const caption = thumbnailElement.dataset.caption;
+
+            lightboxImage.src = src;
+            lightboxCaption.textContent = caption;
+           
+            // Reset state
+            currentScale = 1;
+            translateX = 0;
+            translateY = 0;
+            updateImageTransform();
+           
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling background
+        }
+
+        function closeLightbox(event) {
+            // Only close if clicking the background or the close button
+            if (event.target === lightbox || event.target.closest('button')) {
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Image Zoom (Scroll Wheel)
+        lightboxImageContainer.addEventListener('wheel', (event) => {
+            event.preventDefault();
+
+            // Only zoom if lightbox is open
+            if (lightbox.classList.contains('hidden')) return;
+
+            const zoomFactor = 0.1;
+            const direction = event.deltaY < 0 ? 1 : -1; // Scroll up = zoom in
+
+            let newScale = currentScale + direction * zoomFactor;
+
+            // Clamp scale between 1 (default) and 4 (max zoom)
+            newScale = Math.min(Math.max(1, newScale), 4);
+
+            // Get mouse position relative to image
+            const rect = lightboxImage.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            // Calculate new translation to zoom in/out relative to the mouse pointer
+            translateX -= (mouseX - rect.width / 2) * (newScale - currentScale) / newScale;
+            translateY -= (mouseY - rect.height / 2) * (newScale - currentScale) / newScale;
+
+            currentScale = newScale;
+            updateImageTransform();
+        });
+
+        // Image Pan (Click and Drag)
+        lightboxImage.addEventListener('mousedown', (event) => {
+            if (currentScale > 1) {
+                isDragging = true;
+                startX = event.clientX - translateX;
+                startY = event.clientY - translateY;
+                lightboxImage.style.cursor = 'moving';
+            }
+        });
+
+        document.addEventListener('mousemove', (event) => {
+            if (!isDragging) return;
+            event.preventDefault();
+            translateX = event.clientX - startX;
+            translateY = event.clientY - startY;
+            updateImageTransform();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                if (currentScale > 1) {
+                    lightboxImage.style.cursor = 'move';
+                } else {
+                    lightboxImage.style.cursor = 'grab';
+                }
+            }
+        });
+
+        // Initialize the app by loading the 'home' section
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load content using the object-based history state
+            renderContent(historyStack[0].pageId);
+        });
+    </script>
+</body>
+</html>
