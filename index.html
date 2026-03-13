@@ -98,6 +98,7 @@
             .nav.open {
                 max-height: 75vh;
                 opacity: 1;
+                overflow-y: auto;
             }
 
             /* Ensure the toggle button is visible and prominent */
@@ -171,7 +172,7 @@
 
     <div id="app" class="lg:flex min-h-screen bg-background">
        
-        <aside id="sidebar" class="sidebar lg:w-72 bg-card-bg shadow-xl lg:shadow-md lg:h-screen p-4 lg:sticky lg:top-0">
+        <aside id="sidebar" class="sidebar lg:w-72 bg-card-bg shadow-xl lg:shadow-md lg:max-h-screen lg:overflow-y-auto p-4 lg:sticky lg:top-0">
             <div class="brand-container brand-mobile-toggle flex items-center justify-between lg:block">
                 <div class="brand">
                     <div class="text-center">
@@ -226,7 +227,7 @@
                 <a data-target="achievements" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Achievements</a>
                 <a data-target="participations" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Knowledge Engagement</a>
                 <a data-target="hobbies" class="nav-link block p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150 cursor-pointer">Hobbies</a>
-                <a href="assets/my resume mar 2026.PDF" target="_blank" class="block p-3 rounded-lg text-secondary hover:bg-gray-700 transition duration-150 border-t border-gray-700 mt-4 pt-4 font-semibold">Download Resume (PDF)</a>
+                <a href="assets/my%20resume%20mar%202026.pdf" target="_blank" class="block p-3 rounded-lg text-secondary hover:bg-gray-700 transition duration-150 border-t border-gray-700 mt-4 pt-4 font-semibold">Download Resume (PDF)</a>
             </nav>
         </aside>
 
